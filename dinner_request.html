@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dinner Request</title>
+<style>
+body { font-family: Arial; text-align:center; padding:30px; background:#f4f4f4; }
+select, input, button { font-size:16px; padding:10px; margin:10px 0; width:80%; max-width:400px; }
+button { background:#007BFF; color:white; border:none; cursor:pointer; }
+button:hover { background:#0056b3; }
+option img { width:20px; vertical-align:middle; margin-right:5px; }
+.dinner-option { display:flex; align-items:center; }
+.dinner-option img { width:30px; margin-right:10px; }
+</style>
+</head>
+<body>
+
+<h1>Dinner Request 🍽️</h1>
+
+<select id="predefined">
+  <option value="">--Select a dinner--</option>
+  <option value="Pizza">🍕 Pizza</option>
+  <option value="Burger">🍔 Burger</option>
+  <option value="Pasta">🍝 Pasta</option>
+  <option value="Salad">🥗 Salad</option>
+  <option value="Sushi">🍣 Sushi</option>
+</select><br>
+
+<input type="text" id="custom" placeholder="Or type your own dinner"><br>
+
+<button onclick="sendRequest()">Submit Request</button>
+
+<script>
+function sendRequest() {
+  var predefined = document.getElementById("predefined").value;
+  var custom = document.getElementById("custom").value.trim();
+  var dinner = custom || predefined;
+  if(!dinner){ alert("Please select or type a dinner!"); return; }
+
+  fetch("https://script.google.com/macros/s/AKfycbyoBkbqkjdQ9J3fZje5m6X2QRx186qHT-uyisFzvxktIFcKiTtQqXzH9SVQRb7wHbfC/exec", {
+    method: "POST",
+    body: new URLSearchParams("dinner=" + encodeURIComponent(dinner))
+  }).then(response => response.text())
+    .then(text => {
+      alert("Request sent! ✅");
+      document.getElementById("predefined").value = "";
+      document.getElementById("custom").value = "";
+    })
+    .catch(err => {
+      alert("Failed to send request: " + err);
+      console.error(err);
+    });
+}
+</script>
+
+</body>
+</html>
