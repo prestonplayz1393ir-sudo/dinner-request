@@ -3,54 +3,81 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dinner Request</title>
+<title>Dinner Request 🍽️</title>
 <style>
-body { font-family: Arial; text-align:center; padding:30px; background:#f4f4f4; }
-select, input, button { font-size:16px; padding:10px; margin:10px 0; width:80%; max-width:400px; }
-button { background:#007BFF; color:white; border:none; cursor:pointer; }
+body { font-family: Arial, sans-serif; text-align:center; padding:30px; background:#f9f9f9; }
+h1 { color:#007BFF; }
+.menu-container { display:flex; flex-wrap:wrap; justify-content:center; gap:15px; margin:20px 0; }
+.menu-item { display:flex; flex-direction:column; align-items:center; width:120px; padding:10px; background:white; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.2); cursor:pointer; transition:0.2s; }
+.menu-item:hover { transform:scale(1.05); box-shadow:0 5px 15px rgba(0,0,0,0.3); }
+.menu-item img { width:80px; height:80px; border-radius:8px; }
+.menu-item span { margin-top:10px; font-weight:bold; }
+input, button { font-size:16px; padding:10px; margin:10px 0; width:80%; max-width:400px; border-radius:5px; border:1px solid #ccc; }
+button { background:#007BFF; color:white; border:none; cursor:pointer; transition:0.2s; }
 button:hover { background:#0056b3; }
-option img { width:20px; vertical-align:middle; margin-right:5px; }
-.dinner-option { display:flex; align-items:center; }
-.dinner-option img { width:30px; margin-right:10px; }
 </style>
 </head>
 <body>
 
 <h1>Dinner Request 🍽️</h1>
 
-<select id="predefined">
-  <option value="">--Select a dinner--</option>
-  <option value="Pizza">🍕 Pizza</option>
-  <option value="Burger">🍔 Burger</option>
-  <option value="Pasta">🍝 Pasta</option>
-  <option value="Salad">🥗 Salad</option>
-  <option value="Sushi">🍣 Sushi</option>
-</select><br>
+<div class="menu-container">
+  <div class="menu-item" onclick="selectDinner('Pizza')">
+    <img src="https://i.imgur.com/4iK9zOa.png" alt="Pizza">
+    <span>Pizza</span>
+  </div>
+  <div class="menu-item" onclick="selectDinner('Burger')">
+    <img src="https://i.imgur.com/1xQwKyx.png" alt="Burger">
+    <span>Burger</span>
+  </div>
+  <div class="menu-item" onclick="selectDinner('Pasta')">
+    <img src="https://i.imgur.com/w7aS3w2.png" alt="Pasta">
+    <span>Pasta</span>
+  </div>
+  <div class="menu-item" onclick="selectDinner('Salad')">
+    <img src="https://i.imgur.com/8P6b2j1.png" alt="Salad">
+    <span>Salad</span>
+  </div>
+  <div class="menu-item" onclick="selectDinner('Sushi')">
+    <img src="https://i.imgur.com/V4i5dKw.png" alt="Sushi">
+    <span>Sushi</span>
+  </div>
+</div>
 
 <input type="text" id="custom" placeholder="Or type your own dinner"><br>
 
 <button onclick="sendRequest()">Submit Request</button>
 
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
 <script>
-function sendRequest() {
-  var predefined = document.getElementById("predefined").value;
-  var custom = document.getElementById("custom").value.trim();
-  var dinner = custom || predefined;
-  if(!dinner){ alert("Please select or type a dinner!"); return; }
+emailjs.init('DcY4kwXQQZberZbiN'); // your public API key
 
-  fetch("https://script.google.com/macros/s/AKfycbyoBkbqkjdQ9J3fZje5m6X2QRx186qHT-uyisFzvxktIFcKiTtQqXzH9SVQRb7wHbfC/exec", {
-    method: "POST",
-    body: new URLSearchParams("dinner=" + encodeURIComponent(dinner))
-  }).then(response => response.text())
-    .then(text => {
-      alert("Request sent! ✅");
-      document.getElementById("predefined").value = "";
-      document.getElementById("custom").value = "";
-    })
-    .catch(err => {
-      alert("Failed to send request: " + err);
-      console.error(err);
-    });
+let selectedDinner = "";
+
+function selectDinner(name) {
+  selectedDinner = name;
+  document.getElementById("custom").value = "";
+}
+
+function sendRequest() {
+  const custom = document.getElementById("custom").value.trim();
+  const dinner = custom || selectedDinner;
+  if (!dinner) { alert("Please select or type a dinner!"); return; }
+
+  // Send email with EmailJS
+  emailjs.send('service_xs0cafk', 'template_up98u8q', {
+    from_email: 'prestonplayz1393ir@gmail.com',
+    dinner_request: dinner
+  })
+  .then(function(response) {
+    alert('Dinner request sent! ✅');
+    selectedDinner = "";
+    document.getElementById('custom').value = '';
+  }, function(error) {
+    alert('Failed to send request: ' + error.text);
+    console.error(error);
+  });
 }
 </script>
 
